@@ -10,12 +10,12 @@
 	{% endif %}
 {% endwith %}
 
-<form action="/login" method="POST">
+<form action="/register" method="POST">
 	<input type="username" name="username" placeholder="Username" />
+	<input type="firstname" name="firstname" placeholder="First Name" />
+	<input type="lastname" name="lastname" placeholder="Last Name" />
 	<input type="password" name="password" placeholder="Password" />
-	<input type="submit" value="Log In" />
+	<input type="submit" value="Register" />
 </form>
-
-<a href="/register">Or Register</a>
 
 {% endblock %}

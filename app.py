@@ -1,7 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, session, abort
 import os
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_, or_
 from sqlalchemy.orm import sessionmaker
 from db_def import *
  
@@ -18,26 +18,58 @@ app = Flask(__name__)
 @app.route('/')
 def home():
 	if not session.get('logged_in'):
-		return render_template('login.html')
+		# return render_template('login.html')
+		return redirect('/login')
 	else:
-		return render_template('index.html')
+		return render_template('index.html', user=session.get('current_user'))
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+	if request.method == 'GET':
+		return render_template('register.html')
+	elif request.method == 'POST':
+		username = request.form['username']
+		firstname = request.form['firstname']
+		lastname = request.form['lastname']
+		password = request.form['password']
+
+		if username and firstname and lastname and password:
+			new_user = User(username, firstname, lastname, password)
+			db_session.add(new_user)
+			db_session.commit()
+
+			return redirect('/')
+		else:
+			flash('Missing information!')
+			return redirect('/register')
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-	username = 'admin'
-	password = 'admin'
+	if request.method == 'GET':
+		return render_template('login.html')
+	elif request.method == 'POST':
+		username = request.form['username']
+		password = request.form['password']
 
-	if request.form['username'] == username and request.form['password'] == password:
-		session['logged_in'] = True
-	else:
+		query = db_session.query(User).filter(and_(User.username == username, User.password == password))
+		print(query);
+		for user in query:
+			print('USERR --------------------------------')
+			print(user)
+			session['logged_in'] = True
+			session['current_user'] = username
+			return redirect('/')
+		
 		flash('Wrong username/password!')
-	return redirect('/')
+		return redirect('/')
 
 
 @app.route('/logout', methods=['POST'])
 def logout():
 	session['logged_in'] = False
+	session['current_user'] = None
 	return redirect('/')
 
 
