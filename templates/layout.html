@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>User Auth Test</title>
+
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div>
+
+{% block body %} {% endblock %}
+
+{% if session.logged_in %}
+	<form class="logout" action="/logout" method="POST">
+		<input type="submit" value="Log Out" />
+	</form>
+{% endif %}
+
+</div>
+
+</body>
+</html>
