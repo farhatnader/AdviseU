@@ -1,6 +1,16 @@
 from flask import Flask, flash, redirect, render_template, request, session, abort
 import os
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from db_def import *
+ 
+
+engine = create_engine('sqlite:///users.db', echo=True)
+ 
+Session = sessionmaker(bind=engine)
+db_session = Session()
+
 
 app = Flask(__name__)
 
