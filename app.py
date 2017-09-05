@@ -35,10 +35,14 @@ def register():
 		password = request.form['password']
 
 		if username and firstname and lastname and password:
+			query = db_session.query(User).filter(User.username == username)
+			for user in query:
+				flash('An account already exists with that username!')
+				return redirect('/register')
+
 			new_user = User(username, firstname, lastname, password)
 			db_session.add(new_user)
 			db_session.commit()
-
 			return redirect('/')
 		else:
 			flash('Missing information!')
@@ -53,16 +57,14 @@ def login():
 		username = request.form['username']
 		password = request.form['password']
 
-		query = db_session.query(User).filter(and_(User.username == username, User.password == password))
-		print(query);
-		for user in query:
+		query = db_session.query(User.id).filter(and_(User.username == username, User.password == password))
+		if query.scalar() is not None:
 			print('USERR --------------------------------')
-			print(user)
+			print(username)
 			session['logged_in'] = True
 			session['current_user'] = username
-			return redirect('/')
-		
-		flash('Wrong username/password!')
+		else:
+			flash('Wrong username/password!')
 		return redirect('/')
 
 
